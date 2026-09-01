@@ -2,10 +2,12 @@
 
 **Autonomous scalping agent for [Hyperliquid](https://hyperliquid.xyz) with DCA strategy, multi-timeframe analysis, paper trading, and real-time WebSocket dashboard.**
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Go](https://img.shields.io/badge/Go-1.25+-00ADD8.svg)](https://go.dev)
-[![Next.js](https://img.shields.io/badge/Next.js-16-black.svg)](https://nextjs.org)
-[![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Linux%20%7C%20macOS-blue.svg)](#quick-start)
+<p align="center">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a>
+  <a href="https://go.dev"><img src="https://img.shields.io/badge/Go-1.25+-00ADD8.svg" alt="Go"></a>
+  <a href="https://nextjs.org"><img src="https://img.shields.io/badge/Next.js-16-black.svg" alt="Next.js"></a>
+  <a href="#quick-start"><img src="https://img.shields.io/badge/Platform-Windows%20%7C%20Linux%20%7C%20macOS-blue.svg" alt="Platform"></a>
+</p>
 
 ---
 ![HyperA Dashboard](screenshot_dashboard.png)
