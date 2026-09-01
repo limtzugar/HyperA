@@ -4662,6 +4662,7 @@ const GRID_GAP = 6;
 const GRID_START_Y = 60; // below header
 const GRID_PANEL_W = 460;
 const GRID_STORAGE_KEY = "hypera-sortgrid-v1";
+const GRID_MIN_COL_W = 320; // responsive: min column width before dropping columns
 
 // ─── Dashboard Inner (uses layout context) ──────────────────────────────────
 
@@ -4797,7 +4798,7 @@ function DashboardInner({
         body{background:${T.bg};margin:0}
       `}</style>
       <div style={{ background: T.bg, minHeight: "100vh", padding: 8, color: T.text, fontFamily: EP_FONT }}>
-        <div style={{ maxWidth: 1400, margin: "0 auto", position: "relative" }}>
+        <div style={{ maxWidth: 1600, margin: "0 auto", position: "relative", width: "100%" }}>
           {/* Header — full width, not draggable */}
           <div style={{ marginBottom: 6 }}>
             <HeaderPanel state={state} dark={dark} onThemeToggle={onThemeToggle} onStart={onStart} onStop={onStop} triggerFocus={triggerFocus} onToggleFocus={onToggleFocus} />
@@ -4911,6 +4912,8 @@ function DashboardInner({
               storageKey={GRID_STORAGE_KEY}
               renderItem={renderItem}
               renderHeaderLabel={headerLabel}
+              responsive={true}
+              minColumnWidth={GRID_MIN_COL_W}
               theme={{
                 accent: T.orange,
                 border: T.border,

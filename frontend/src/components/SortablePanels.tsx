@@ -24,9 +24,27 @@ import React, {
   useEffect,
   useCallback,
   useLayoutEffect,
+  useMemo,
   CSSProperties,
   PointerEvent as ReactPointerEvent,
 } from 'react';
+
+/* ------------------------------------------------------------
+ *  0. useContainerWidth — measures actual container width via ResizeObserver
+ * ------------------------------------------------------------ */
+function useContainerWidth(ref: React.RefObject<HTMLDivElement | null>): number {
+  const [width, setWidth] = useState(0);
+  useLayoutEffect(() => {
+    if (!ref.current) return;
+    const ro = new ResizeObserver(([entry]) => {
+      const w = entry.contentBoxSize?.[0]?.inlineSize ?? entry.contentRect.width;
+      if (w > 0) setWidth(Math.floor(w));
+    });
+    ro.observe(ref.current);
+    return () => ro.disconnect();
+  }, [ref]);
+  return width;
+}
 
 /* ------------------------------------------------------------
  *  1. arrayMove — czysta funkcja, nie mutuje wejścia
@@ -445,8 +463,12 @@ interface SortableGridProps {
   items: SortableGridItem[];
   /** Liczba kolumn (domyślnie 3) */
   columns?: number;
-  /** Szerokość pojedynczej kolumny (px) — stała dla wszystkich paneli */
+  /** Szerokość pojedynczej kolumny (px) — obliczana dynamicznie jeśli responsive=true */
   columnWidth?: number;
+  /** Responsive layout — kolumny dopasowują się do szerokości kontenera */
+  responsive?: boolean;
+  /** Minimalna szerokość kolumny w trybie responsive (px) */
+  minColumnWidth?: number;
   /** Odstęp między panelami i między kolumnami (px) */
   gap?: number;
   /** Górny offset kontenera (np. pod nagłówek aplikacji) */
@@ -500,8 +522,8 @@ const FALLBACK_HEIGHT = 240;
 
 export function SortableGrid({
   items,
-  columns = 3,
-  columnWidth = 460,
+  columns: columnsProp = 3,
+  columnWidth: columnWidthProp = 460,
   gap = 6,
   startY = 0,
   storageKey,
@@ -515,7 +537,21 @@ export function SortableGrid({
   flipDuration = DEFAULT_FLIP_DURATION,
   flipEasing = DEFAULT_FLIP_EASING,
   controllerRef,
+  responsive = false,
+  minColumnWidth = 320,
 }: SortableGridProps) {
+  /* ----- Ref na kontener (do obliczeń boundingRect + responsive) ----- */
+  const containerRef = useRef<HTMLDivElement>(null);
+  const measuredWidth = useContainerWidth(containerRef);
+
+  /* ----- Responsive: compute columns + columnWidth from measured container ----- */
+  const columns = responsive && measuredWidth > 0
+    ? Math.max(1, Math.floor((measuredWidth + gap) / (minColumnWidth + gap)))
+    : columnsProp;
+  const columnWidth = responsive && measuredWidth > 0
+    ? Math.floor((measuredWidth - (columns - 1) * gap) / columns)
+    : columnWidthProp;
+
   /* ----- Heights state — per-panel height, modyfikowalne przez resize handle ----
    *  Szerokość jest stała (columnWidth), wysokość zmienna — użytkownik może
    *  przeciągać dolną krawędź każdego panelu, aby dopasować jej rozmiar.
@@ -1012,11 +1048,10 @@ export function SortableGrid({
     [order, theme.accent, columns, columnWidth, gap, startY, undoLimit],
   );
 
-  /* ----- Ref na kontener (do obliczeń boundingRect) ----- */
-  const containerRef = useRef<HTMLDivElement>(null);
-
   /* ----- Render ----- */
-  const containerWidth = columns * columnWidth + (columns - 1) * gap;
+  const containerWidth = responsive && measuredWidth > 0
+    ? measuredWidth
+    : columns * columnWidth + (columns - 1) * gap;
 
   return (
     <div
@@ -1025,9 +1060,10 @@ export function SortableGrid({
         {
           '--panel-width': `${columnWidth}px`,
           position: 'relative',
-          width: `${containerWidth}px`,
+          width: responsive && measuredWidth > 0 ? '100%' : `${containerWidth}px`,
           height: `${containerHeightRef.current}px`,
           userSelect: 'none',
+          boxSizing: 'border-box' as const,
         } as CSSProperties
       }
     >
