@@ -9,6 +9,7 @@
 
 ---
 ![HyperA Dashboard](screenshot_dashboard.png)
+![HyperA Indicators](screenshot_indicators.png)
 
 
 ## 📋 Overview
