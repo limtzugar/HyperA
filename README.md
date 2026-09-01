@@ -8,6 +8,8 @@
 [![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Linux%20%7C%20macOS-blue.svg)](#quick-start)
 
 ---
+![HyperA Demo](demo.gif)
+
 
 ## 📋 Overview
 
